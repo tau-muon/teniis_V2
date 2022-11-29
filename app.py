@@ -11,12 +11,14 @@ from dash import html, dcc
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 
+
 # Helper functions
 
 def get_standings(api_key):
     url = f"https://api.api-tennis.com/tennis/?method=get_standings&event_type=ATP&APIkey={api_key}"
     response = requests.get(url)
     return json.loads(response.text)['result']
+
 
 # Read the data
 
@@ -31,10 +33,10 @@ BASE_URL = 'https://api.api-tennis.com/tennis/?'
 API_KEY = "ea60e20b6b5c56a9b7f6102c93047fe6e96610565fb73fb2015be77983c4243a"
 method = 'method=get_players'
 
-
 standings = pd.DataFrame(get_standings(API_KEY))[["player", "place", "points", 'player_key']]
-# country_code = dict(df["country_id"])
 
+
+# country_code = dict(df["country_id"])
 
 
 # Function for figures
@@ -93,7 +95,7 @@ def show_country(player_id_1, player_id_2):
                       title_font_size=40, title_font_color='green', paper_bgcolor='white', plot_bgcolor='red')
     fig.update_layout(
         margin=dict(l=20, r=20, t=20, b=20),
-        paper_bgcolor="LightSteelBlue",
+        # paper_bgcolor="LightSteelBlue",
     )
     return fig
 
@@ -231,30 +233,32 @@ def title_season(player1_id, player2_id):
     # fig.update_layout(template="plotly_white")
     return fig
 
+
 def age(df, id_1, id_2):
     df['age'] = (pd.to_datetime("today") - pd.to_datetime(df["dob"])) / np.timedelta64(1, 'Y')
     age1 = df.loc[id_1]['age']
     age2 = df.loc[id_2]['age']
     ln1 = df.loc[id_1]['last_name']
     ln2 = df.loc[id_2]['last_name']
-    
+
     fig = go.Figure()
 
     fig.add_trace(go.Indicator(
-        mode = "number",
-        value = np.floor(age1),
-        number = {'prefix': f"{ln1}: "},
-        delta = {'position': "top", 'reference': 320},
-        domain = {'x': [0, 1], 'y': [0.5, 1]}))
+        mode="number",
+        value=np.floor(age1),
+        number={'prefix': f"{ln1}: "},
+        delta={'position': "top", 'reference': 320},
+        domain={'x': [0, 1], 'y': [0.5, 1]}))
 
     fig.add_trace(go.Indicator(
-        mode = "number",
-        value = np.floor(age2),
-        number = {'prefix': f"{ln2}: "},
-        delta = {'position': "top", 'reference': 320},
-        domain = {'x': [0, 1], 'y': [0, 1]}))
+        mode="number",
+        value=np.floor(age2),
+        number={'prefix': f"{ln2}: "},
+        delta={'position': "top", 'reference': 320},
+        domain={'x': [0, 1], 'y': [0, 1]}))
 
     return fig
+
 
 def rank(df, standings, id_1, id_2):
     ln1 = df.loc[id_1]['last_name']
@@ -266,24 +270,20 @@ def rank(df, standings, id_1, id_2):
 
     fig = go.Figure()
     fig.add_trace(go.Indicator(
-        mode = "number",
-        value = np.floor(rank1),
-        number = {'prefix': f"{ln1}: "},
-        delta = {'position': "top", 'reference': 320},
-        domain = {'x': [0, 1], 'y': [0.5, 1]}))
+        mode="number",
+        value=np.floor(rank1),
+        number={'prefix': f"{ln1}: "},
+        delta={'position': "top", 'reference': 320},
+        domain={'x': [0, 1], 'y': [0.5, 1]}))
 
     fig.add_trace(go.Indicator(
-        mode = "number",
-        value = np.floor(rank2),
-        number = {'prefix': f"{ln2}: "},
-        delta = {'position': "top", 'reference': 320},
-        domain = {'x': [0, 1], 'y': [0, 1]}))
+        mode="number",
+        value=np.floor(rank2),
+        number={'prefix': f"{ln2}: "},
+        delta={'position': "top", 'reference': 320},
+        domain={'x': [0, 1], 'y': [0, 1]}))
 
     return fig
-
-
-
-
 
 
 # ------------------------------------------------------ APP ------------------------------------------------------
@@ -440,6 +440,75 @@ app.layout = html.Div(
 
                         ], className="box"),
 
+                        # -----------------------Select parameters for prediction
+
+                        html.Div([
+                            html.Div([
+
+                                html.Label("Select Surface:"),
+                                html.Br(),
+                                html.Br(),
+                                dcc.RadioItems(id='surface_type',
+                                               options={
+                                                   'G': 'Grass',
+                                                   'C': 'Clay',
+                                                   'H': 'Hard'
+                                               },
+                                               value='Grass'
+                                               )
+                            ],
+                                style={
+                                    "margin": "5px",
+                                    "display": "inline-block",
+                                    "padding-top": "5px",
+                                    "padding-bottom": "5px",
+                                    "width": "33%",
+                                }, ),
+
+                            html.Div([
+                                html.Label("Indoor or Outdoor:"),
+                                html.Br(),
+                                html.Br(),
+                                dcc.RadioItems(id='in_out',
+                                               options={
+                                                   1: 'Indoor',
+                                                   0: 'Outdoor',
+                                               },
+                                               value='Indoor'
+                                               )
+                            ],
+                                style={
+                                    "margin": "5px",
+                                    "display": "inline-block",
+                                    "padding-top": "5px",
+                                    "padding-bottom": "5px",
+                                    "width": "30%",
+                                }, ),
+
+                            html.Div([
+                                html.Label("Best Of:"),
+                                html.Br(),
+                                html.Br(),
+                                dcc.RadioItems(id='surface_type',
+                                               options={
+                                                   '3': 'Best of 3',
+                                                   '5': 'Best of 5',
+                                               },
+                                               value='Best of 3'
+                                               )
+                            ],
+                                style={
+                                    "margin": "5px",
+                                    "display": "inline-block",
+                                    "padding-top": "5px",
+                                    "padding-bottom": "5px",
+                                    "width": "33%",
+                                }, ),
+
+                        ], className="box"),
+
+                        # -----------------
+
                         # Two charts radar and map. Row 1 of viz
 
                         html.Div(
@@ -451,7 +520,7 @@ app.layout = html.Div(
                                                 html.Label(id="title_bar"),
                                                 dcc.Graph(id="radar_chart"),
                                                 html.Div(
-                                                    [html.P(id="comment", children='This is a Radar Chart comparing '
+                                                    [html.P(id="comment", children='Radar Chart comparing '
                                                                                    'two selected players on '
                                                                                    'performance metric of ratio of '
                                                                                    'matches won in different '
@@ -474,7 +543,7 @@ app.layout = html.Div(
                                                 html.Label(id="title_bar2"),
                                                 dcc.Graph(id="map_chart"),
                                                 html.Div(
-                                                    [html.P(id="comment2", children="This is a choropleth map showing "
+                                                    [html.P(id="comment2", children="Choropleth map showing "
                                                                                     "the location of countries where "
                                                                                     "the two selected players are "
                                                                                     "from.")],
@@ -504,7 +573,7 @@ app.layout = html.Div(
                                                 html.Label(id="title_bar3"),
                                                 dcc.Graph(id="rank_season"),
                                                 html.Div(
-                                                    [html.P(id="comment3", children='This line graphs shows rank of '
+                                                    [html.P(id="comment3", children='Line graphs shows rank of '
                                                                                     'player 1 and player 2 over '
                                                                                     'seasons, in case of a gap there '
                                                                                     'maybe some abnormal behaviour.')],
@@ -534,7 +603,7 @@ app.layout = html.Div(
                                                 html.Label(id="title_bar4"),
                                                 dcc.Graph(id="title_season"),
                                                 html.Div(
-                                                    [html.P(id="comment4", children='This line graphs shows no of '
+                                                    [html.P(id="comment4", children='Line graphs shows no of '
                                                                                     'titles won by '
                                                                                     'player 1 and player 2 over '
                                                                                     'seasons, in case of a gap there '
@@ -566,7 +635,7 @@ app.layout = html.Div(
                                                 dcc.Graph(id="age"),
                                                 html.Div(
                                                     [html.P(id="comment5", children='This indicator shows the age '
-                                                                                   'of each player ')],
+                                                                                    'of each player ')],
                                                     className="box_comment",
                                                 ),
                                             ],
@@ -600,8 +669,6 @@ app.layout = html.Div(
                             ],
                             className="box",
                         ),
-
-                        
 
                         html.Div(
                             [
@@ -755,6 +822,7 @@ def update_plot(player1, player2):
     else:
         raise PreventUpdate
 
+
 @app.callback(
     Output(component_id='age', component_property='figure'),
     [Input(component_id='dropdown_player_1', component_property='value'),
@@ -767,6 +835,7 @@ def update_plot(player1, player2):
     else:
         raise PreventUpdate
 
+
 @app.callback(
     Output(component_id='rank', component_property='figure'),
     [Input(component_id='dropdown_player_1', component_property='value'),
@@ -778,6 +847,7 @@ def update_plot(player1, player2):
         return fig
     else:
         raise PreventUpdate
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
