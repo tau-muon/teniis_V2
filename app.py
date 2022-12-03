@@ -30,7 +30,7 @@ df_radar = df[["name", "matches_win_percentage", "grand_slam_win_percentage", "t
                "outdoor_matches_win_percentage", "indoor_matches_win_percentage"]]
 
 BASE_URL = 'https://api.api-tennis.com/tennis/?'
-API_KEY = "ea60e20b6b5c56a9b7f6102c93047fe6e96610565fb73fb2015be77983c4243a"
+API_KEY = "84818ec2586012d56c6d009790776455e75e6d7f9221ad8ee70d40d2dec185ff"
 method = 'method=get_players'
 
 standings = pd.DataFrame(get_standings(API_KEY))[["player", "place", "points", 'player_key']]
