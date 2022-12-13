@@ -849,5 +849,6 @@ def update_plot(player1, player2):
         raise PreventUpdate
 
 
+        
 if __name__ == '__main__':
     app.run_server(debug=True)
